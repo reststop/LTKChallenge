@@ -5,8 +5,8 @@
 
 - Build a feed of full-width images that are consumed from a production API.
  
-        - All of our images are in an aspect ratio that supports an edge-to-edge (full-width)
-UI. So, no worries there.
+        - All of our images are in an aspect ratio that supports an edge-to-edge (full-width) UI. So, no worries there.
+ 
         - The feed should support pagination.
 
 - When a user taps on one of the full-width images, then a detail view should be pushed onto the view stack. The detail view should contain product images, the hero image, and the profile picture.
