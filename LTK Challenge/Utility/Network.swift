@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 import Alamofire
-import AlamofireImage
 
 let RESULTNOTIFICATION = Notification.Name("NETWORK-RESULT-NOTIFICATION")
 let PAGELOADEDNOTIFICATION = Notification.Name("PAGE-LOADED-NOTIFICATION")
@@ -39,7 +38,6 @@ class Network {
 
                 if case .success(let json) = response.result {
                     complete(true, page, json as? [String : Any])
-                    //Network.notifyResult()
                     Network.pageLoaded()
                 }
 
@@ -63,7 +61,6 @@ class Network {
 
                     if case .success(let json) = response.result {
                         complete(true, page, json as? [String : Any])
-                        //Network.notifyResult()
                         Network.pageLoaded()
                     }
                 }
@@ -75,15 +72,16 @@ class Network {
         }
     }
 
-    class func getImage(_ urlString: String, key: String, completion: @escaping (UIImage?) -> Void) {
+    // only used if not using AlamofireImage package
+    class func getImage(_ type: ImageType, _ urlString: String, key: String, completion: @escaping (UIImage?) -> Void) {
         AF.request(urlString, method: .get).responseImage { response in
             if case .success(let image) = response.result {
-                LTKImage.add(image, key, urlString)
+                LTKImage.add(type, image, key, urlString)
                 completion(image)
                 Network.notifyResult()
             }
             else {
-                getImage(urlString, key: key) { image in
+                getImage(type, urlString, key: key) { image in
                     completion(image)
                 }
             }

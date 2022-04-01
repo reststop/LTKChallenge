@@ -33,6 +33,7 @@ class LTKData {
     static let itemCount : Int = 10
     static var itemPages : Int = 0
     static var itemMax : Int = 0
+
     static var items : [LTKItem] = []
 
     // meta values needed for next URL
@@ -59,7 +60,7 @@ class LTKData {
     }
 
     
-    class func processData(_ page: Int, _ pageItems: [String:Any]) -> Bool {
+    private class func processData(_ page: Int, _ pageItems: [String:Any]) -> Bool {
 
         // grab items from data in more useful chunks
         let ltks = pageItems["ltks"] as! [[String:Any]]
@@ -82,7 +83,7 @@ class LTKData {
                     ltk.caption = entry["caption"] as! String
 
                     // asynchronously get hero image
-                    LTKImage.download(ltk.ID, ltk.heroURL)
+                    LTKImage.download(.hero, ltk.ID, ltk.heroURL)
 
                     // need width and height for custom image cell size
                     ltk.heroWidth = entry["hero_image_width"] as! Int
@@ -125,7 +126,7 @@ class LTKData {
                             ltk.profileURL = profile["avatar_url"] as! String
 
                             // asynchronously get profile image
-                            LTKImage.download(ltk.profileID, ltk.profileURL)
+                            LTKImage.download(.profile, ltk.profileID, ltk.profileURL)
                             break
                         }
                     } // each profile

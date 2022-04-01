@@ -30,9 +30,10 @@ class LTKDetailViewController: UIViewController,
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
+        // get or prefetch product images at view load time
         products = ltk.products
         for index in 0...(products.count - 1) {
-            LTKImage.download(products[index].ID, products[index].imageURL)
+            LTKImage.download(.product, products[index].ID, products[index].imageURL)
         }
         refreshImages()
 
@@ -44,7 +45,7 @@ class LTKDetailViewController: UIViewController,
 
     func refreshImages() {
 
-        var image = LTKImage.get(ltk.ID, ltk.heroURL)
+        var image = LTKImage.get(.hero, ltk.ID, ltk.heroURL)
         //debugPrint("URL: \(ltk.heroURL)")
         if image != nil {
             let hSize = self.heroImageView.frame.size
@@ -61,7 +62,7 @@ class LTKDetailViewController: UIViewController,
             self.heroImageView.image = image
         }
 
-        image = LTKImage.get(ltk.profileID, ltk.profileURL)
+        image = LTKImage.get(.profile, ltk.profileID, ltk.profileURL)
         if image != nil {
             let hSize = self.profileImageView.frame.size
             let iSize = image!.size
@@ -143,17 +144,28 @@ class LTKDetailViewController: UIViewController,
 
         let cell : LTKProductViewCell = collectionView.dequeueReusableCell(withReuseIdentifier: "productCell", for: indexPath) as! LTKProductViewCell
 
-        let image : UIImage? = LTKImage.get(product.ID, product.imageURL)
+        let image : UIImage? = LTKImage.get(.product, product.ID, product.imageURL)
         if image != nil {
             cell.imageView.image = image
+            cell.imageView.alpha = 1.0
+
         }
         else {
             debugPrint("Using placeholder")
             cell.imageView.image = LTKImage.placeHolderImage
+            cell.imageView.alpha = 0.2
+
         }
 
         cell.setNeedsDisplay()
         return cell
+    }
+
+
+    // Note: This delegate call really helps pre-fetch images ahead of displaying them
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let product = products[indexPath.row]
+        let _ = LTKImage.get(.product, product.ID, product.imageURL)
     }
 
 

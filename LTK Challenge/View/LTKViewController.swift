@@ -29,6 +29,9 @@ class LTKViewController: UIViewController,
         super.viewDidLoad()
         // Do any additional setup after loading the view.
 
+        // initialize custom value for image cache(s)
+        LTKImage.initialize()
+        
         debugPrint("Items/page: \(LTKData.itemCount)")
         self.backButton.tintColor = UIColor.clear
 
@@ -179,20 +182,37 @@ class LTKViewController: UIViewController,
 
         cell.imageView.frame.size = cell.frame.size
 
-        let image : UIImage? = LTKImage.get(ltk.ID, ltk.heroURL)
+        let image : UIImage? = LTKImage.get(.hero, ltk.ID, ltk.heroURL)
         if image != nil {
             //let size: CGSize = image!.size
             //debugPrint("Using: \(ltk.ID), \(ltk.heroURL)  \(Int(size.width))x\(Int(size.height))")
             cell.imageView.image = image
+            cell.imageView.alpha = 1.0
         }
         else {
             //debugPrint("Using placeholder")
             cell.imageView.image = LTKImage.placeHolderImage
+            cell.imageView.alpha = 0.2
+
         }
 
         cell.setNeedsDisplay()
         return cell
     }
+
+
+    // Note: This delegate call really helps pre-fetch images ahead of displaying them
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        let row = (LTKData.itemCount * self.pageIndex) + indexPath.row
+        if row >= LTKData.items.count {
+            debugPrint("Item Index out of range")
+            return
+        }
+
+        let ltk = LTKData.items[row]
+        let _ = LTKImage.get(.hero, ltk.ID, ltk.heroURL)
+    }
+
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let row = (LTKData.itemCount * self.pageIndex) + indexPath.row
